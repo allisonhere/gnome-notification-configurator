@@ -16,6 +16,17 @@
 
 <br>
 
+> **Note:** This is a modified fork of
+> [gnome-notification-configurator](https://github.com/ExposedCat/gnome-notification-configurator)
+> by [ExposedCat](https://github.com/ExposedCat), maintained by
+> [@allisonhere](https://github.com/allisonhere). Changes in this fork: GNOME
+> Shell 50 support, and an Appearance page adding border, corner radius,
+> padding, explicit sizing, background opacity, drop shadow, background blur,
+> and icon size/visibility controls — globally and per pattern. All support
+> links and badges above point to the original author.
+
+<br>
+
 ## Features
 
 - **Global and Pattern-Based Rules** - Configure default behavior globally or
@@ -38,6 +49,14 @@
   right) and vertical alignment (fill, top, center, bottom)
 - **Custom Appearance** - Hide the app title/time row, customize background,
   title, body, app name, and time colors, and adjust text sizes
+- **Shape and Sizing** - Set corner radius, border color and width, inner
+  padding, explicit width/height, and a minimum height
+- **Drop Shadow** - Toggle a shadow and tune its color, X/Y offset, blur, and
+  spread
+- **Background Blur** - Blur what sits behind a notification, with adjustable
+  radius and brightness
+- **Icon Controls** - Resize or hide the app source icon and the notification
+  icon independently
 - **Custom Margins** - Add top, bottom, left, and right notification margins
 - **Test Notifications** - Send sample notifications from the preferences window
   to preview matching and styling changes
@@ -65,9 +84,15 @@ website, you can install it manually:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/ExposedCat/gnome-notification-configurator.git
+   git clone https://github.com/allisonhere/gnome-notification-configurator.git
    cd gnome-notification-configurator
    ```
+
+   (Replace with
+   [the original repository](https://github.com/ExposedCat/gnome-notification-configurator)
+   if you want upstream rather than this fork. Note that this fork keeps the
+   `notification-configurator@exposedcat` UUID, so it installs over the upstream
+   extension rather than alongside it.)
 
 2. Install the extension:
    ```bash
@@ -138,6 +163,11 @@ To add translations for the extension:
 
 This project is licensed under the GNU General Public License v3.0 or later
 (GPL-3.0-or-later).
+
+This fork is distributed under the same terms as the original project and does
+not alter its license notices. Note that upstream declares `GPL-3.0-or-later`
+here and `LGPL-3.0-or-later` in `package.json`; that discrepancy is the original
+author's to resolve.
 
 ## Contributing
 
