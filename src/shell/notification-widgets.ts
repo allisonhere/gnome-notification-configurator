@@ -19,6 +19,8 @@ export type NotificationWidgets = {
   time: St.Bin | null;
   title: St.Bin | null;
   body: St.Bin | null;
+  sourceIcon: St.Widget | null;
+  notificationIcon: St.Widget | null;
   sourceName: string;
   titleText: string;
   bodyText: string;
@@ -92,7 +94,9 @@ export function resolveNotificationWidgets(
   const source = headerContent?.get_child_at_index(0) as St.Bin | null;
   const sourceText = source?.get_first_child() as Clutter.Text | null;
   const time = headerContent?.get_child_at_index(1) as St.Bin | null;
+  const sourceIcon = header?.get_child_at_index(0) as St.Widget | null;
   const content = notification?.get_child_at_index(1);
+  const notificationIcon = content?.get_child_at_index(0) as St.Widget | null;
   const contentBody = content?.get_child_at_index(1) as St.BoxLayout | null;
   const title = contentBody?.get_child_at_index(0) as St.Bin | null;
   const body = contentBody?.get_child_at_index(1) as St.Bin | null;
@@ -117,6 +121,8 @@ export function resolveNotificationWidgets(
     time,
     title,
     body,
+    sourceIcon,
+    notificationIcon,
     sourceName,
     titleText,
     bodyText,

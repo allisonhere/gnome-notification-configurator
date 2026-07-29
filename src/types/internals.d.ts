@@ -110,7 +110,9 @@ declare module "resource:///org/gnome/shell/ui/messageTray.js" {
     _notificationFocusGrabber: { ungrabFocus: () => void };
     _userActiveWhileNotificationShown?: boolean;
     _banner:
-      | import("@girs/gnome-shell/ui/messageList").NotificationMessage
+      | (import("@girs/gnome-shell/ui/messageList").NotificationMessage & {
+          disconnectObject: (object: object) => void;
+        })
       | null;
     _bannerBin: import("gi://St").default.Widget & {
       ease: (params: Record<string, unknown>) => void;
