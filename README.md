@@ -58,15 +58,6 @@
 
 - Install
   [Extension Manager](https://flathub.org/apps/com.mattjakeman.ExtensionManager)
-- Search For `Notification Configurator` in `Browse` tab
-- Select the extension and click `Install`
-
-### GNOME Extenssions Website
-
-<a href="https://extensions.gnome.org/extension/8249/notification-configurator/">
-  <!-- Button SVG by Just Perfection developer -->
-  <img src="./assets/download-from-ego.svg" height="80">
-</a>
 
 ### Manual Installation
 
