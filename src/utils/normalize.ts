@@ -108,5 +108,71 @@ export function normalizeTheme(theme: unknown): NotificationTheme {
       candidate.bodyFontSize,
       DEFAULT_THEME.bodyFontSize,
     ),
+    borderColor: normalizeColor(
+      candidate.borderColor,
+      DEFAULT_THEME.borderColor,
+    ),
+    borderWidth: normalizeNumber(
+      candidate.borderWidth,
+      DEFAULT_THEME.borderWidth,
+    ),
+    cornerRadius: normalizeNumber(
+      candidate.cornerRadius,
+      DEFAULT_THEME.cornerRadius,
+    ),
+    padding: normalizeNumber(candidate.padding, DEFAULT_THEME.padding),
+    width: normalizeNumber(candidate.width, DEFAULT_THEME.width),
+    height: normalizeNumber(candidate.height, DEFAULT_THEME.height),
+    minHeight: normalizeNumber(candidate.minHeight, DEFAULT_THEME.minHeight),
+    backgroundOpacity: normalizeNumber(
+      candidate.backgroundOpacity,
+      DEFAULT_THEME.backgroundOpacity,
+    ),
+    shadowEnabled: normalizeBoolean(
+      candidate.shadowEnabled,
+      DEFAULT_THEME.shadowEnabled,
+    ),
+    shadowColor: normalizeColor(
+      candidate.shadowColor,
+      DEFAULT_THEME.shadowColor,
+    ),
+    shadowOffsetX: normalizeNumber(
+      candidate.shadowOffsetX,
+      DEFAULT_THEME.shadowOffsetX,
+    ),
+    shadowOffsetY: normalizeNumber(
+      candidate.shadowOffsetY,
+      DEFAULT_THEME.shadowOffsetY,
+    ),
+    shadowBlur: normalizeNumber(candidate.shadowBlur, DEFAULT_THEME.shadowBlur),
+    shadowSpread: normalizeNumber(
+      candidate.shadowSpread,
+      DEFAULT_THEME.shadowSpread,
+    ),
+    blurEnabled: normalizeBoolean(
+      candidate.blurEnabled,
+      DEFAULT_THEME.blurEnabled,
+    ),
+    blurRadius: normalizeNumber(candidate.blurRadius, DEFAULT_THEME.blurRadius),
+    blurBrightness: normalizeNumber(
+      candidate.blurBrightness,
+      DEFAULT_THEME.blurBrightness,
+    ),
+    sourceIconSize: normalizeNumber(
+      candidate.sourceIconSize,
+      DEFAULT_THEME.sourceIconSize,
+    ),
+    sourceIconVisible: normalizeBoolean(
+      candidate.sourceIconVisible,
+      DEFAULT_THEME.sourceIconVisible,
+    ),
+    notificationIconSize: normalizeNumber(
+      candidate.notificationIconSize,
+      DEFAULT_THEME.notificationIconSize,
+    ),
+    notificationIconVisible: normalizeBoolean(
+      candidate.notificationIconVisible,
+      DEFAULT_THEME.notificationIconVisible,
+    ),
   };
 }

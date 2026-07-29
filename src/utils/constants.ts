@@ -10,6 +10,27 @@ export type NotificationTheme = {
   timeFontSize: number;
   titleFontSize: number;
   bodyFontSize: number;
+  borderColor: Color;
+  borderWidth: number;
+  cornerRadius: number;
+  padding: number;
+  width: number;
+  height: number;
+  minHeight: number;
+  backgroundOpacity: number;
+  shadowEnabled: boolean;
+  shadowColor: Color;
+  shadowOffsetX: number;
+  shadowOffsetY: number;
+  shadowBlur: number;
+  shadowSpread: number;
+  blurEnabled: boolean;
+  blurRadius: number;
+  blurBrightness: number;
+  sourceIconSize: number;
+  sourceIconVisible: boolean;
+  notificationIconSize: number;
+  notificationIconVisible: boolean;
 };
 
 export const DEFAULT_THEME: NotificationTheme = {
@@ -22,4 +43,25 @@ export const DEFAULT_THEME: NotificationTheme = {
   timeFontSize: 14,
   titleFontSize: 18,
   bodyFontSize: 18,
+  borderColor: [1, 1, 1, 0.1],
+  borderWidth: 0,
+  cornerRadius: 16,
+  padding: 6,
+  width: 499,
+  height: 0,
+  minHeight: 64,
+  backgroundOpacity: 100,
+  shadowEnabled: true,
+  shadowColor: [0, 0, 0, 0.2],
+  shadowOffsetX: 0,
+  shadowOffsetY: 2,
+  shadowBlur: 4,
+  shadowSpread: 2,
+  blurEnabled: false,
+  blurRadius: 24,
+  blurBrightness: 1,
+  sourceIconSize: 16,
+  sourceIconVisible: true,
+  notificationIconSize: 48,
+  notificationIconVisible: true,
 };
