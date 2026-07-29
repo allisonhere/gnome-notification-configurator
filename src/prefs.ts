@@ -33,11 +33,37 @@ type FontSizeKey =
   | "titleFontSize"
   | "bodyFontSize";
 
+type ThemeNumberKey = {
+  [Key in keyof NotificationTheme]: NotificationTheme[Key] extends number
+    ? Key
+    : never;
+}[keyof NotificationTheme];
+
+type ThemeBooleanKey = {
+  [Key in keyof NotificationTheme]: NotificationTheme[Key] extends boolean
+    ? Key
+    : never;
+}[keyof NotificationTheme];
+
+type ThemeColorSlot = {
+  [Key in keyof NotificationTheme]: NotificationTheme[Key] extends number[]
+    ? Key
+    : never;
+}[keyof NotificationTheme];
+
+type SpinRange = {
+  lower: number;
+  upper: number;
+  step?: number;
+  digits?: number;
+};
+
 type ThemeField = {
   label: string;
   colorKey: ColorKey;
   fontKey: FontSizeKey | null;
   hideWhenAppTitleRowHidden: boolean;
+  useAlpha: boolean;
 };
 
 type ThemeEditorRow = {
@@ -59,30 +85,35 @@ const THEME_FIELDS: ThemeField[] = [
     colorKey: "backgroundColor",
     fontKey: null,
     hideWhenAppTitleRowHidden: false,
+    useAlpha: false,
   },
   {
     label: "Title",
     colorKey: "titleColor",
     fontKey: "titleFontSize",
     hideWhenAppTitleRowHidden: false,
+    useAlpha: true,
   },
   {
     label: "Body Text",
     colorKey: "bodyColor",
     fontKey: "bodyFontSize",
     hideWhenAppTitleRowHidden: false,
+    useAlpha: true,
   },
   {
     label: "App Name",
     colorKey: "appNameColor",
     fontKey: "appNameFontSize",
     hideWhenAppTitleRowHidden: true,
+    useAlpha: true,
   },
   {
     label: "Time",
     colorKey: "timeColor",
     fontKey: "timeFontSize",
     hideWhenAppTitleRowHidden: true,
+    useAlpha: true,
   },
 ];
 
@@ -92,7 +123,7 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
   private patterns!: PatternConfiguration[];
   private patternsList!: Gtk.ListBox;
 
-  fillPreferencesWindow(window: Adw.PreferencesWindow) {
+  async fillPreferencesWindow(window: Adw.PreferencesWindow) {
     this.settings = this.getSettings();
     migrateRegexSchema(this.settings);
     this.loadData();
@@ -103,6 +134,19 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
     });
     window.add(globalPage);
     this.buildGlobalPage(globalPage);
+
+    const appearancePage = new Adw.PreferencesPage({
+      title: _("Appearance"),
+      icon_name: "applications-graphics-symbolic",
+    });
+    window.add(appearancePage);
+    this.addAppearanceGroups(
+      appearancePage,
+      this.globalConfig,
+      () => this.saveGlobal(),
+      null,
+    );
+    this.addTestSection(appearancePage);
 
     const patternsPage = new Adw.PreferencesPage({
       title: _("Patterns"),
@@ -339,6 +383,13 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
     filterGroup.add(filterActionRow);
 
     this.addConfigurationGroups(
+      detailPage,
+      pattern,
+      () => this.savePatterns(),
+      pattern.overrides,
+    );
+
+    this.addAppearanceGroups(
       detailPage,
       pattern,
       () => this.savePatterns(),
@@ -727,10 +778,17 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
     displayGroup.add(horizontalRow);
     displayGroup.add(verticalRow);
     updateDisplayVisibility();
+  }
 
+  private addAppearanceGroups(
+    page: Adw.PreferencesPage,
+    config: Configuration,
+    onSave: () => void,
+    overrides: PatternOverrides | null,
+  ) {
     const appearanceGroup = new Adw.PreferencesGroup({
-      title: _("Appearance"),
-      description: _("Customize notification styles and margins"),
+      title: _("Colors and Text"),
+      description: _("Customize notification colors and font sizes"),
     });
     page.add(appearanceGroup);
 
@@ -756,6 +814,187 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
       config.colors.theme,
       onSave,
     );
+
+    const theme = config.colors.theme;
+
+    const windowGroup = new Adw.PreferencesGroup({
+      title: _("Window"),
+      description: _("Shape, border and blur of the notification window"),
+    });
+    page.add(windowGroup);
+
+    const backgroundOpacityRow = this.createThemeSpinRow(
+      _("Background Opacity"),
+      _("100 is solid, lower values let the desktop show through"),
+      theme,
+      "backgroundOpacity",
+      { lower: 0, upper: 100, step: 5 },
+      onSave,
+    );
+    const cornerRadiusRow = this.createThemeSpinRow(
+      _("Corner Radius"),
+      _("Roundness of the notification corners"),
+      theme,
+      "cornerRadius",
+      { lower: 0, upper: 64 },
+      onSave,
+    );
+    const paddingRow = this.createThemeSpinRow(
+      _("Padding"),
+      _("Inner spacing between the edge and the content"),
+      theme,
+      "padding",
+      { lower: 0, upper: 64 },
+      onSave,
+    );
+    const widthRow = this.createThemeSpinRow(
+      _("Width"),
+      _("Notification width in pixels"),
+      theme,
+      "width",
+      { lower: 150, upper: 1600, step: 10 },
+      onSave,
+    );
+    const heightRow = this.createThemeSpinRow(
+      _("Height"),
+      _("Fixed notification height, 0 to grow with content"),
+      theme,
+      "height",
+      { lower: 0, upper: 800, step: 10 },
+      onSave,
+    );
+    const minHeightRow = this.createThemeSpinRow(
+      _("Minimum Height"),
+      _("Minimum notification height in pixels"),
+      theme,
+      "minHeight",
+      { lower: 0, upper: 800, step: 10 },
+      onSave,
+    );
+    const borderWidthRow = this.createThemeSpinRow(
+      _("Border Width"),
+      _("Thickness of the border, 0 to disable"),
+      theme,
+      "borderWidth",
+      { lower: 0, upper: 16 },
+      onSave,
+    );
+    const borderColorRow = this.createThemeColorRow(
+      _("Border Color"),
+      theme,
+      "borderColor",
+      onSave,
+    );
+    const shadowColorRow = this.createThemeColorRow(
+      _("Shadow Color"),
+      theme,
+      "shadowColor",
+      onSave,
+    );
+    const shadowOffsetXRow = this.createThemeSpinRow(
+      _("Shadow Offset X"),
+      _("Horizontal shadow offset, negative moves it left"),
+      theme,
+      "shadowOffsetX",
+      { lower: -32, upper: 32 },
+      onSave,
+    );
+    const shadowOffsetYRow = this.createThemeSpinRow(
+      _("Shadow Offset Y"),
+      _("Vertical shadow offset, negative moves it up"),
+      theme,
+      "shadowOffsetY",
+      { lower: -32, upper: 32 },
+      onSave,
+    );
+    const shadowBlurRow = this.createThemeSpinRow(
+      _("Shadow Blur"),
+      _("Softness of the shadow edge"),
+      theme,
+      "shadowBlur",
+      { lower: 0, upper: 64 },
+      onSave,
+    );
+    const shadowSpreadRow = this.createThemeSpinRow(
+      _("Shadow Spread"),
+      _("How far the shadow extends outwards"),
+      theme,
+      "shadowSpread",
+      { lower: 0, upper: 64 },
+      onSave,
+    );
+
+    const shadowEnabledRow = new Adw.SwitchRow({
+      title: _("Enable Drop Shadow"),
+      subtitle: _("Cast a shadow behind the notification"),
+    });
+    shadowEnabledRow.set_active(theme.shadowEnabled);
+
+    const blurRadiusRow = this.createThemeSpinRow(
+      _("Blur Radius"),
+      _("Strength of the background blur"),
+      theme,
+      "blurRadius",
+      { lower: 0, upper: 200 },
+      onSave,
+    );
+    const blurBrightnessRow = this.createThemeSpinRow(
+      _("Blur Brightness"),
+      _("Brightness of the blurred background"),
+      theme,
+      "blurBrightness",
+      { lower: 0, upper: 1, step: 0.05, digits: 2 },
+      onSave,
+    );
+
+    const blurEnabledRow = new Adw.SwitchRow({
+      title: _("Enable Background Blur"),
+      subtitle: _("Blur the desktop behind the notification"),
+    });
+    blurEnabledRow.set_active(theme.blurEnabled);
+
+    const iconsGroup = new Adw.PreferencesGroup({
+      title: _("Icons"),
+      description: _("Application icon and notification image"),
+    });
+    page.add(iconsGroup);
+
+    const sourceIconVisibleRow = this.createThemeSwitchRow(
+      _("Show App Icon"),
+      _("Small application icon in the header"),
+      theme,
+      "sourceIconVisible",
+      onSave,
+    );
+    const sourceIconSizeRow = this.createThemeSpinRow(
+      _("App Icon Size"),
+      _("Size of the small header icon"),
+      theme,
+      "sourceIconSize",
+      { lower: 8, upper: 64 },
+      onSave,
+    );
+    const notificationIconVisibleRow = this.createThemeSwitchRow(
+      _("Show Notification Icon"),
+      _("Large icon or image attached to the notification"),
+      theme,
+      "notificationIconVisible",
+      onSave,
+    );
+    const notificationIconSizeRow = this.createThemeSpinRow(
+      _("Notification Icon Size"),
+      _("Size of the large notification icon"),
+      theme,
+      "notificationIconSize",
+      { lower: 16, upper: 128 },
+      onSave,
+    );
+
+    const marginsGroup = new Adw.PreferencesGroup({
+      title: _("Margins"),
+      description: _("Distance between notifications and the screen edges"),
+    });
+    page.add(marginsGroup);
 
     const marginTopRow = new Adw.SpinRow({
       title: _("Margin Top"),
@@ -830,6 +1069,31 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
       marginRightRow,
     ];
 
+    const styleRows = [
+      backgroundOpacityRow,
+      cornerRadiusRow,
+      paddingRow,
+      widthRow,
+      heightRow,
+      minHeightRow,
+      borderWidthRow,
+      borderColorRow,
+      shadowEnabledRow,
+      blurEnabledRow,
+      sourceIconVisibleRow,
+      sourceIconSizeRow,
+      notificationIconVisibleRow,
+      notificationIconSizeRow,
+    ];
+    const blurRows = [blurRadiusRow, blurBrightnessRow];
+    const shadowRows = [
+      shadowColorRow,
+      shadowOffsetXRow,
+      shadowOffsetYRow,
+      shadowBlurRow,
+      shadowSpreadRow,
+    ];
+
     const updateThemeRowsVisibility = () => {
       const active = !overrides || overrides.colors || overrides.margins;
       stylesEnabledRow.set_visible(active);
@@ -844,7 +1108,28 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
             ),
         );
       }
+      for (const row of styleRows) {
+        row.set_visible(active && config.colors.enabled);
+      }
+      for (const row of blurRows) {
+        row.set_visible(active && config.colors.enabled && theme.blurEnabled);
+      }
+      for (const row of shadowRows) {
+        row.set_visible(active && config.colors.enabled && theme.shadowEnabled);
+      }
     };
+
+    shadowEnabledRow.connect("notify::active", () => {
+      theme.shadowEnabled = shadowEnabledRow.get_active();
+      onSave();
+      updateThemeRowsVisibility();
+    });
+
+    blurEnabledRow.connect("notify::active", () => {
+      theme.blurEnabled = blurEnabledRow.get_active();
+      onSave();
+      updateThemeRowsVisibility();
+    });
 
     const updateMarginsVisibility = () => {
       const active = !overrides || overrides.colors || overrides.margins;
@@ -887,14 +1172,38 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
       );
     }
 
-    appearanceGroup.add(hideAppTitleRow);
     appearanceGroup.add(stylesEnabledRow);
+    appearanceGroup.add(hideAppTitleRow);
     for (const themeRow of themeRows) {
       appearanceGroup.add(themeRow.row);
     }
-    appearanceGroup.add(marginsEnabledRow);
+
+    windowGroup.add(backgroundOpacityRow);
+    windowGroup.add(cornerRadiusRow);
+    windowGroup.add(paddingRow);
+    windowGroup.add(widthRow);
+    windowGroup.add(heightRow);
+    windowGroup.add(minHeightRow);
+    windowGroup.add(borderWidthRow);
+    windowGroup.add(borderColorRow);
+    windowGroup.add(shadowEnabledRow);
+    windowGroup.add(shadowColorRow);
+    windowGroup.add(shadowOffsetXRow);
+    windowGroup.add(shadowOffsetYRow);
+    windowGroup.add(shadowBlurRow);
+    windowGroup.add(shadowSpreadRow);
+    windowGroup.add(blurEnabledRow);
+    windowGroup.add(blurRadiusRow);
+    windowGroup.add(blurBrightnessRow);
+
+    iconsGroup.add(sourceIconVisibleRow);
+    iconsGroup.add(sourceIconSizeRow);
+    iconsGroup.add(notificationIconVisibleRow);
+    iconsGroup.add(notificationIconSizeRow);
+
+    marginsGroup.add(marginsEnabledRow);
     for (const row of marginRows) {
-      appearanceGroup.add(row);
+      marginsGroup.add(row);
     }
     updateAppearanceVisibility();
   }
@@ -922,6 +1231,81 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
     group.add(row);
   }
 
+  private createThemeSpinRow(
+    title: string,
+    subtitle: string,
+    theme: NotificationTheme,
+    key: ThemeNumberKey,
+    range: SpinRange,
+    onSave: () => void,
+  ): Adw.SpinRow {
+    const step = range.step ?? 1;
+    const row = new Adw.SpinRow({
+      title,
+      subtitle,
+      digits: range.digits ?? 0,
+      adjustment: new Gtk.Adjustment({
+        lower: range.lower,
+        upper: range.upper,
+        step_increment: step,
+        page_increment: step * 10,
+        value: theme[key] ?? DEFAULT_THEME[key],
+      }),
+    });
+    row.connect("notify::value", () => {
+      theme[key] = row.get_value();
+      onSave();
+    });
+    return row;
+  }
+
+  private createThemeSwitchRow(
+    title: string,
+    subtitle: string,
+    theme: NotificationTheme,
+    key: ThemeBooleanKey,
+    onSave: () => void,
+  ): Adw.SwitchRow {
+    const row = new Adw.SwitchRow({ title, subtitle });
+    row.set_active(theme[key] ?? DEFAULT_THEME[key]);
+    row.connect("notify::active", () => {
+      theme[key] = row.get_active();
+      onSave();
+    });
+    return row;
+  }
+
+  private createThemeColorRow(
+    title: string,
+    theme: NotificationTheme,
+    key: ThemeColorSlot,
+    onSave: () => void,
+  ): Adw.ActionRow {
+    const row = new Adw.ActionRow({ title });
+    const colorValue = theme[key] ?? DEFAULT_THEME[key];
+
+    const colorButton = new Gtk.ColorButton({
+      use_alpha: true,
+      valign: Gtk.Align.CENTER,
+    });
+    colorButton.set_rgba(
+      new Gdk.RGBA({
+        red: colorValue[0] ?? 0,
+        green: colorValue[1] ?? 0,
+        blue: colorValue[2] ?? 0,
+        alpha: colorValue[3] ?? 1,
+      }),
+    );
+    colorButton.connect("color-set", () => {
+      const rgba = colorButton.get_rgba();
+      theme[key] = [rgba.red, rgba.green, rgba.blue, rgba.alpha];
+      onSave();
+    });
+    row.add_suffix(colorButton);
+
+    return row;
+  }
+
   private addThemeEditor(
     _group: Adw.PreferencesGroup,
     theme: NotificationTheme,
@@ -936,7 +1320,7 @@ export default class NotificationConfiguratorPreferences extends ExtensionPrefer
 
       const colorValue = theme[field.colorKey];
       const colorButton = new Gtk.ColorButton({
-        use_alpha: false,
+        use_alpha: field.useAlpha,
         valign: Gtk.Align.CENTER,
       });
       colorButton.set_rgba(
