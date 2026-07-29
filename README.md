@@ -5,25 +5,16 @@
 </h1>
 <p align="center"><strong>Advanced GNOME notification capabilities including rate limiting, custom color theming per application, and notification positioning</strong></p>
 
-<div align="center">
-
-<a href="https://coff.ee/exposedcat" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
-
-[![](https://img.shields.io/badge/author%20blog%20on-Telegram-informational?style=for-the-badge&logo=telegram&logoColor=26A5E4&color=26A5E4)](https://t.me/ExposedCatDev)
-[![](https://img.shields.io/badge/author-Reddit-informational?style=for-the-badge&logo=reddit&logoColor=FF5700&color=FF5700)](https://www.reddit.com/user/ExposedCatDev)
-
-</div>
-
-<br>
-
 > **Note:** This is a modified fork of
 > [gnome-notification-configurator](https://github.com/ExposedCat/gnome-notification-configurator)
-> by [ExposedCat](https://github.com/ExposedCat), maintained by
-> [@allisonhere](https://github.com/allisonhere). Changes in this fork: GNOME
-> Shell 50 support, and an Appearance page adding border, corner radius,
-> padding, explicit sizing, background opacity, drop shadow, background blur,
-> and icon size/visibility controls — globally and per pattern. All support
-> links and badges above point to the original author.
+> by [ExposedCat](https://github.com/ExposedCat), forked July 2026 and
+> maintained by [@allisonhere](https://github.com/allisonhere). Changes in this
+> fork: GNOME Shell 50 support, and an Appearance page adding border, corner
+> radius, padding, explicit sizing, background opacity, drop shadow, background
+> blur, and icon size/visibility controls — globally and per pattern.
+>
+> If you find this extension useful, please support the original author:
+> [ExposedCat on GitHub](https://github.com/ExposedCat).
 
 <br>
 
